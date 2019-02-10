@@ -6,8 +6,10 @@ import platform
 import threading
 import queue as Queue
 import sqlite3
+import argparse
 import time
 import atexit
+import pygame
 import os
 
 import importlib
@@ -15,19 +17,57 @@ dk = importlib.__import__('dkinter')
 
 BREAK_DURATION = 6 * 60
 SLOT_DURATION = 25 * 60
-__TESTING__ = False
+__LIVE__ = False
+SOUND_FILE = './cartoon-telephone_daniel_simion.mp3'
 
 
+@atexit.register
 def shutdown():
     os.system("shutdown /a")
 
-    if __TESTING__:
-        os.system("shutdown /s /t 3600")
+    if __LIVE__ is True:
+        os.system("shutdown /s /f /t 0")
     else:
-        os.system("shutdown /s /t 0")
+        os.system("shutdown /s /t 3600")
 
+    print('KILL-SIGNAL')
 
-atexit.register(shutdown)
+class ThreadedTask(threading.Thread):
+    def __init__(self, queue):
+        threading.Thread.__init__(self)
+        self.queue = queue
+        self.kill = False
+
+        pygame.mixer.init()
+        pygame.mixer.music.load(SOUND_FILE)
+
+    def run(self):
+        n = 0
+
+        while not self.kill:
+            #print("TEST")
+            time.sleep(0.2)
+            msg = None
+
+            try:
+                msg = self.queue.get(0)
+                print("MSG", msg)
+            except Queue.Empty:
+                n += 1
+                print("SASD", n)
+                pass
+
+            if msg == 'DIE':
+                pygame.mixer.music.stop()
+                print("DIE")
+                self.kill = True
+
+            elif msg == 'play':
+                if not pygame.mixer.music.get_busy():
+                    pygame.mixer.music.play(loops=-1)
+
+            elif msg is not None:
+                pygame.mixer.music.stop()
 
 class Database(object):
     def __init__(self):
@@ -102,14 +142,6 @@ def formatSecs(diff):
     secs = pad(str(diff % 60), 2)
     return "%s:%s" % (mins, secs)
 
-class ThreadedTask(threading.Thread):
-    def __init__(self, queue):
-        threading.Thread.__init__(self)
-        self.queue = queue
-
-    def run(self):
-        #self.queue.put("Task finished")
-        pass
 
 class MododoroApp(dk.PlusFrame):
     MSG_BUISNESS = "State your buisness."
@@ -118,6 +150,7 @@ class MododoroApp(dk.PlusFrame):
     STATE_READY = "ready"
     STATE_ONGOING = "ongoing"
     STATE_BREAK = "break"
+    STATE_RINGING = "ringing"
 
     PADX = 20
     PADY = 20
@@ -126,7 +159,6 @@ class MododoroApp(dk.PlusFrame):
         dk.PlusFrame.__init__(self, master, bindScroll=True)
         self['bg'] = 'white'
         self.master['bg'] = 'white'
-        self.master.bind("<Destroy>", self.shutdown)
         self.db = Database()
 
         # self.configData = config.config()
@@ -136,11 +168,17 @@ class MododoroApp(dk.PlusFrame):
         self.insertTime = None
         self.end = -1
 
+        self.queue = Queue.Queue()
+        self.thread = ThreadedTask(self.queue)
+        self.thread.start()
+        #self.queue.put('play')
+        #print("play")
+
         self.make()
         self.recur()
         self.bind("<Destroy>", self.onDestroy)
         self.master.protocol('WM_DELETE_WINDOW', self.shutdown)
-        self.master.attributes("-fullscreen", True)
+        self.enableFullScreen()
         self.center()
 
         self.pack(
@@ -150,15 +188,27 @@ class MododoroApp(dk.PlusFrame):
             expand=YES
         )
 
-        self.queue = Queue.Queue()
-        ThreadedTask(self.queue).start()
-        self.master.after(0, self.process_queue)
+    def enableFullScreen(self):
+        self.master.attributes("-fullscreen", True)
+    def disableFullScreen(self):
+        self.master.attributes("-fullscreen", False)
 
     def onDestroy(self, *args):
         print("DESTROY")
 
+    def shutdown(self, *args):
+        # os.system("shutdown /s /t 0")
+        self.queue.put('DIE')
+        print("SHUTDOWN")
+        shutdown()
+        #pass
+
+
     def updateState(self):
         timeNow = int(time.time())
+        newState = self.state
+        fullscreen = False
+        topmost = False
 
         if self.end >= timeNow > 0:
             newState = __class__.STATE_ONGOING
@@ -168,12 +218,7 @@ class MododoroApp(dk.PlusFrame):
             self.promptLabel.config(text=__class__.MSG_PROGRESS)
             self.timeLabel.config(text=formatSecs(diff))
             self.comments.config(state='disabled')
-            self.master.attributes("-fullscreen", False)
-
-            if self.state != newState:
-                self.master.attributes("-topmost", False)
-
-            self.state = newState
+            topmost = False
 
         elif self.end + BREAK_DURATION >= timeNow >= self.end:
             newState = __class__.STATE_BREAK
@@ -183,35 +228,53 @@ class MododoroApp(dk.PlusFrame):
             self.promptLabel.config(text=__class__.MSG_BREAK)
             self.timeLabel.config(text=formatSecs(diff))
             self.comments.config(state='disabled')
-            self.master.attributes("-fullscreen", True)
-            self.master.attributes("-topmost", True)
-            self.state = newState
+
+            fullscreen = True
+            topmost = True
+
+        elif self.state == __class__.STATE_BREAK:
+            newState = __class__.STATE_RINGING
+            self.comments.delete('1.0', 'end')
+            # ringing, waiting for user to acknowledge
+            # that break is over
+            fullscreen = True
+            topmost = True
+            self.queue.put('play')
+            print('play')
+
+        elif self.state == __class__.STATE_RINGING:
+            fullscreen = True
+            self.submitBttn.config(text="Stop Alarm")
+            topmost = True
+            pass
 
         else:
             # nothing going on
+            # self.queue.put('stop')
             newState = __class__.STATE_READY
-            if self.state != newState:
-                self.comments.delete('1.0', 'end')
-
             self.promptLabel.config(text=__class__.MSG_BUISNESS)
             self.timeLabel.config(text="--:--")
             self.comments.config(state='normal')
-            self.master.attributes("-fullscreen", True)
-            self.master.attributes("-topmost", True)
-            self.state = newState
+            fullscreen = True
+            topmost = True
+
+        if self.state != newState or __LIVE__:
+            if topmost:
+                self.master.attributes("-topmost", True)
+            else:
+                self.master.attributes("-topmost", False)
+
+        if fullscreen:
+            self.enableFullScreen()
+        else:
+            self.disableFullScreen()
+
+        self.state = newState
 
 
     def recur(self):
         self.updateState()
         self.after(250, self.recur)
-
-    def shutdown(self):
-        # os.system("shutdown /s /t 0")
-        # shutdown()
-        pass
-
-    def process_queue(self):
-        pass
 
     def make(self):
         """
@@ -292,11 +355,13 @@ class MododoroApp(dk.PlusFrame):
 
         end, reason = self.db.getLatest()
         self.comments.delete('1.0', 'end')
-        self.comments.insert('end', reason)
+        if end > int(time.time()):
+            self.comments.insert('end', reason)
+
         self.end = end
 
     def submit(self, *args):
-        reason = self.comments.get("1.0",END)
+        reason = self.comments.get("1.0", END)
         timeNow = int(time.time())
 
         if self.state == __class__.STATE_READY:
@@ -307,8 +372,14 @@ class MododoroApp(dk.PlusFrame):
 
         elif self.state == __class__.STATE_ONGOING:
             self.db.insertReason(self.end, reason)
-            self.state = __class__.STATE_ONGOING
             self.updateState()
+
+        elif self.state == __class__.STATE_RINGING:
+            self.submitBttn.config(text="Submit")
+            self.queue.put('stop')
+            self.state = __class__.STATE_READY
+            self.updateState()
+
 
     def setMain(self):
         self.topline = Frame(self, height=2, bg='grey96')
@@ -352,6 +423,16 @@ class MododoroApp(dk.PlusFrame):
         )
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--force", help="force shutdowns",
+        action="store_true"
+    )
+    args = parser.parse_args()
+
+    if args.force:
+        __LIVE__ = True
+
     root = Tk()
     root.title('Monodoro v0.01')
     root = MododoroApp(root)
