@@ -207,7 +207,8 @@ class MododoroApp(dk.PlusFrame):
 
     def shutdown(self):
         # os.system("shutdown /s /t 0")
-        shutdown()
+        # shutdown()
+        pass
 
     def process_queue(self):
         pass
