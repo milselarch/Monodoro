@@ -55,7 +55,8 @@ class ThreadedTask(threading.Thread):
             mins = 60 * now.hour + now.minute
             lateMark = 10 * 60 + 5
             earlyMark = 5 * 60 + 35
-            if lateMark >= mins >= earlyMark:
+            if (mins >= lateMark) or (earlyMark >= mins):
+                print("BAD HOURS TO BE AWAKE")
                 self.kill = True
                 shutdown()
 
@@ -269,16 +270,16 @@ class MododoroApp(dk.PlusFrame):
             fullscreen = True
             topmost = True
 
+        if fullscreen:
+            self.enableFullScreen()
+        else:
+            self.disableFullScreen()
+
         if (self.state != newState) or __LIVE__:
             if topmost:
                 self.master.attributes("-topmost", True)
             else:
                 self.master.attributes("-topmost", False)
-
-        if fullscreen:
-            self.enableFullScreen()
-        else:
-            self.disableFullScreen()
 
         self.state = newState
 
