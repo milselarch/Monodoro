@@ -7,6 +7,7 @@ import threading
 import queue as Queue
 import sqlite3
 import argparse
+import datetime
 import time
 import atexit
 import pygame
@@ -15,8 +16,9 @@ import os
 import importlib
 dk = importlib.__import__('dkinter')
 
-BREAK_DURATION = 6 * 60
-SLOT_DURATION = 25 * 60
+
+BREAK_DURATION = 6
+SLOT_DURATION = 25
 __LIVE__ = False
 SOUND_FILE = './cartoon-telephone_daniel_simion.mp3'
 
@@ -48,6 +50,14 @@ class ThreadedTask(threading.Thread):
             #print("TEST")
             time.sleep(0.2)
             msg = None
+
+            now = datetime.datetime.now()
+            mins = 60 * now.hour + now.minute
+            lateMark = 10 * 60 + 5
+            earlyMark = 5 * 60 + 35
+            if lateMark >= mins >= earlyMark:
+                self.kill = True
+                shutdown()
 
             try:
                 msg = self.queue.get(0)
@@ -237,14 +247,15 @@ class MododoroApp(dk.PlusFrame):
             self.comments.delete('1.0', 'end')
             # ringing, waiting for user to acknowledge
             # that break is over
-            fullscreen = True
-            topmost = True
             self.queue.put('play')
             print('play')
 
-        elif self.state == __class__.STATE_RINGING:
             fullscreen = True
+            topmost = True
+
+        elif self.state == __class__.STATE_RINGING:
             self.submitBttn.config(text="Stop Alarm")
+            fullscreen = True
             topmost = True
             pass
 
@@ -258,7 +269,7 @@ class MododoroApp(dk.PlusFrame):
             fullscreen = True
             topmost = True
 
-        if self.state != newState or __LIVE__:
+        if (self.state != newState) or __LIVE__:
             if topmost:
                 self.master.attributes("-topmost", True)
             else:
