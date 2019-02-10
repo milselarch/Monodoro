@@ -352,7 +352,7 @@ class MododoroApp(dk.PlusFrame):
 
 if __name__ == '__main__':
     root = Tk()
-    root.title('pyTracker v2.54')
+    root.title('Monodoro v0.01')
     root = MododoroApp(root)
     # root.setMain()
     # root.grid()
