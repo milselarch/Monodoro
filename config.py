@@ -14,10 +14,9 @@ MAC_HASH = hashlib.sha256(MAC_ADDR.encode('utf-8')).hexdigest()
 
 class config(object):
     data = {
-        'text-file': None,
-        'sqlite-file': None,
-        'cheaklist-file': None,
-        'ID': MAC_HASH
+        'BREAK_DURATION': '6',
+        'SLOT_DURATION': '25',
+        'LIVE': 'false'
     }
 
     filename = 'data/config.yml'
@@ -27,7 +26,6 @@ class config(object):
             self.open()
         except FileNotFoundError:
             self.makeDefaults()
-
 
     def __getitem__(self, item):
         return self.data[item]
@@ -73,7 +71,10 @@ class config(object):
 
         for key in self.data:
             current = self.data[key]
-            self.data[key] = input(key + " [%s]" % current + ": ")
+            userInput = input(key + " [%s]" % current + ": ")
+
+            if userInput.strip() != '':
+                self.data[key] = userInput
 
         self.writeOut()
 

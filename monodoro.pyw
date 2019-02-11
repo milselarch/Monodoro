@@ -11,15 +11,25 @@ import datetime
 import time
 import atexit
 import pygame
+import config
 import os
+import ctypes
 
 import importlib
 dk = importlib.__import__('dkinter')
 
+settings = config.config()
 
-BREAK_DURATION = 6
-SLOT_DURATION = 25
-__LIVE__ = False
+#   store some stuff for win api interaction
+set_to_foreground = ctypes.windll.user32.SetForegroundWindow
+keybd_event = ctypes.windll.user32.keybd_event
+alt_key = 0x12
+extended_key = 0x0001
+key_up = 0x0002
+
+BREAK_DURATION = int(settings['BREAK_DURATION'])
+SLOT_DURATION = int(settings['SLOT_DURATION'])
+__LIVE__ = settings['LIVE'] == 'true'
 SOUND_FILE = './cartoon-telephone_daniel_simion.mp3'
 
 
@@ -199,6 +209,11 @@ class MododoroApp(dk.PlusFrame):
             expand=YES
         )
 
+    def steal_focus(self):
+        keybd_event(alt_key, 0, extended_key | 0, 0)
+        set_to_foreground(self.master.winfo_id())
+        keybd_event(alt_key, 0, extended_key | key_up, 0)
+
     def enableFullScreen(self):
         self.master.attributes("-fullscreen", True)
     def disableFullScreen(self):
@@ -219,7 +234,6 @@ class MododoroApp(dk.PlusFrame):
         timeNow = int(time.time())
         newState = self.state
         fullscreen = False
-        topmost = False
 
         if self.end >= timeNow > 0:
             newState = __class__.STATE_ONGOING
@@ -229,7 +243,6 @@ class MododoroApp(dk.PlusFrame):
             self.promptLabel.config(text=__class__.MSG_PROGRESS)
             self.timeLabel.config(text=formatSecs(diff))
             self.comments.config(state='disabled')
-            topmost = False
 
         elif self.end + BREAK_DURATION >= timeNow >= self.end:
             newState = __class__.STATE_BREAK
@@ -239,9 +252,7 @@ class MododoroApp(dk.PlusFrame):
             self.promptLabel.config(text=__class__.MSG_BREAK)
             self.timeLabel.config(text=formatSecs(diff))
             self.comments.config(state='disabled')
-
             fullscreen = True
-            topmost = True
 
         elif self.state == __class__.STATE_BREAK:
             newState = __class__.STATE_RINGING
@@ -249,16 +260,11 @@ class MododoroApp(dk.PlusFrame):
             # ringing, waiting for user to acknowledge
             # that break is over
             self.queue.put('play')
-            print('play')
-
             fullscreen = True
-            topmost = True
 
         elif self.state == __class__.STATE_RINGING:
             self.submitBttn.config(text="Stop Alarm")
             fullscreen = True
-            topmost = True
-            pass
 
         else:
             # nothing going on
@@ -268,17 +274,16 @@ class MododoroApp(dk.PlusFrame):
             self.timeLabel.config(text="--:--")
             self.comments.config(state='normal')
             fullscreen = True
-            topmost = True
 
         if fullscreen:
             self.enableFullScreen()
+            if (self.state != newState) or __LIVE__:
+                self.steal_focus()
+                self.master.attributes("-topmost", True)
+
         else:
             self.disableFullScreen()
-
-        if (self.state != newState) or __LIVE__:
-            if topmost:
-                self.master.attributes("-topmost", True)
-            else:
+            if (self.state != newState) or __LIVE__:
                 self.master.attributes("-topmost", False)
 
         self.state = newState
