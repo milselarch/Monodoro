@@ -27,9 +27,9 @@ alt_key = 0x12
 extended_key = 0x0001
 key_up = 0x0002
 
-BREAK_DURATION = int(settings['BREAK_DURATION'])
-SLOT_DURATION = int(settings['SLOT_DURATION'])
-__LIVE__ = settings['LIVE'] == 'true'
+BREAK_DURATION = settings['BREAK_DURATION']
+SLOT_DURATION = settings['SLOT_DURATION']
+__LIVE__ = settings['LIVE'] is True
 SOUND_FILE = './cartoon-telephone_daniel_simion.mp3'
 
 

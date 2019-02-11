@@ -2,6 +2,7 @@ import uuid
 import hashlib
 import os
 
+import ast
 import yaml
 
 """
@@ -16,7 +17,7 @@ class config(object):
     data = {
         'BREAK_DURATION': '6',
         'SLOT_DURATION': '25',
-        'LIVE': 'false'
+        'LIVE': True
     }
 
     filename = 'data/config.yml'
@@ -62,7 +63,10 @@ class config(object):
         if data is not None:
             for key in data:
                 if key in self.data:
-                    self.data[key] = data[key]
+                    try:
+                        data[key] = int(data[key])
+                    finally:
+                        self.data[key] = data[key]
 
         print(self.data)
 
@@ -74,7 +78,7 @@ class config(object):
             userInput = input(key + " [%s]" % current + ": ")
 
             if userInput.strip() != '':
-                self.data[key] = userInput
+                self.data[key] = ast.literal_eval(userInput)
 
         self.writeOut()
 

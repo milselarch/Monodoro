@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="321fed33-20a2-481e-8091-3773b9d07f14" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/config.py" afterPath="$PROJECT_DIR$/config.py" />
       <change beforePath="$PROJECT_DIR$/monodoro.pyw" afterPath="$PROJECT_DIR$/monodoro.pyw" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,7 +21,7 @@
             <entry file="file://$PROJECT_DIR$/monodoro.pyw">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="273">
-                  <caret line="67" column="39" lean-forward="false" selection-start-line="67" selection-start-column="39" selection-end-line="67" selection-end-column="39" />
+                  <caret line="31" column="35" lean-forward="false" selection-start-line="31" selection-start-column="35" selection-end-line="31" selection-end-column="35" />
                   <folding>
                     <element signature="e#0#21#0" expanded="true" />
                   </folding>
@@ -32,7 +33,7 @@
             <entry file="file://$PROJECT_DIR$/data/config.yml">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="63">
-                  <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+                  <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -64,11 +65,11 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="525">
-          <file leaf-file-name="monodoro.pyw" pinned="false" current-in-tab="true">
+          <file leaf-file-name="monodoro.pyw" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/monodoro.pyw">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="273">
-                  <caret line="46" column="10" lean-forward="false" selection-start-line="46" selection-start-column="10" selection-end-line="46" selection-end-column="10" />
+                <state relative-caret-position="798">
+                  <caret line="56" column="13" lean-forward="true" selection-start-line="56" selection-start-column="13" selection-end-line="56" selection-end-column="13" />
                   <folding>
                     <element signature="e#0#21#0" expanded="true" />
                   </folding>
@@ -76,12 +77,14 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="config.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/config.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="378">
-                  <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-                  <folding />
+                <state relative-caret-position="257">
+                  <caret line="63" column="15" lean-forward="true" selection-start-line="63" selection-start-column="15" selection-end-line="63" selection-end-column="15" />
+                  <folding>
+                    <element signature="e#0#11#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -124,7 +127,6 @@
       <find>MediaPlayer</find>
       <find>MediaPlayer(</find>
       <find>find_lib</find>
-      <find>play</find>
       <find>STATE =</find>
       <find>submit</find>
       <find>'play'</find>
@@ -139,6 +141,7 @@
       <find>process_</find>
       <find>fullscre</find>
       <find>topmost</find>
+      <find>play</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -308,7 +311,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="378">
           <caret line="22" column="0" lean-forward="true" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -662,14 +667,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/data/data.db">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -681,17 +678,27 @@
     <entry file="file://$PROJECT_DIR$/data/config.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="63">
-          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/monodoro.pyw">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="67" column="39" lean-forward="false" selection-start-line="67" selection-start-column="39" selection-end-line="67" selection-end-column="39" />
+        <state relative-caret-position="798">
+          <caret line="56" column="13" lean-forward="true" selection-start-line="56" selection-start-column="13" selection-end-line="56" selection-end-column="13" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="63" column="15" lean-forward="true" selection-start-line="63" selection-start-column="15" selection-end-line="63" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
