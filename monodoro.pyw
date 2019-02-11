@@ -63,7 +63,7 @@ class ThreadedTask(threading.Thread):
 
             now = datetime.datetime.now()
             mins = 60 * now.hour + now.minute
-            lateMark = 10 * 60 + 5
+            lateMark = 22 * 60 + 5
             earlyMark = 5 * 60 + 35
             if (mins >= lateMark) or (earlyMark >= mins):
                 print("BAD HOURS TO BE AWAKE")
@@ -252,6 +252,7 @@ class MododoroApp(dk.PlusFrame):
             self.promptLabel.config(text=__class__.MSG_BREAK)
             self.timeLabel.config(text=formatSecs(diff))
             self.comments.config(state='disabled')
+            ctypes.windll.user32.LockWorkStation()
             fullscreen = True
 
         elif self.state == __class__.STATE_BREAK:
