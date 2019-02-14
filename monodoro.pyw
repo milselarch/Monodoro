@@ -29,7 +29,7 @@ key_up = 0x0002
 
 BREAK_DURATION = settings['BREAK_DURATION']
 SLOT_DURATION = settings['SLOT_DURATION']
-__LIVE__ = settings['LIVE'] is True
+__LIVE__ = settings['LIVE'] == True
 SOUND_FILE = './cartoon-telephone_daniel_simion.mp3'
 
 
